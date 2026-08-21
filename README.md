@@ -1,6 +1,6 @@
 **`简体中文`** | [English](README-en.md)
  
-[![Workflow Status](https://img.shields.io/github/actions/workflow/status/Numbersf/Action-Build/Build%20Kernel%20OnePlus.yml?branch=SukiSU-Ultra&label=Build&logo=github-actions&style=flat-square)](https://github.com/Numbersf/Action-Build/actions/workflows/Build%20Kernel%20OnePlus.yml?query=branch%3ASukiSU-Ultra)
+[![Workflow Status](https://img.shields.io/github/actions/workflow/status/Numbersf/Action-Build/Build%20Kernel%20OnePlus.yml?branch=SukiSU-Ultra&label=remote%20build&logo=github-actions&style=flat-square)](https://github.com/Numbersf/Action-Build/actions/workflows/Build%20Kernel%20OnePlus.yml?query=branch%3ASukiSU-Ultra) ![Downloads](https://img.shields.io/github/downloads/Numbersf/Action-Build/total)
  
 [![Kernel Manifest](https://img.shields.io/badge/Kernel%20Manifest-EB0029?logo=oneplus&logoColor=white&style=flat-square)](https://github.com/OnePlusOSS/kernel_manifest) [![Dynamic Kernel Manifest](https://img.shields.io/badge/Dynamic%20Kernel%20Manifest-EB0029?logo=oneplus&logoColor=white&style=flat-square)](https://github.com/Numbersf/kernel_manifest) [![Kernel Manifest Appendix](https://img.shields.io/badge/Kernel%20Manifest%20Appendix-EB0029?logo=oneplus&logoColor=white&style=flat-square)](https://github.com/Numbersf/Kernel_Manifest_Appendix) [![Fengchi Kernel](https://img.shields.io/badge/Fengchi%20Kernel-EB0029?logo=github&logoColor=white&style=flat-square)](https://github.com/Numbersf/SCHED_PATCH)
  
@@ -10,7 +10,7 @@
  
 # Action-Build
  
-<img src="https://readme-typing-svg.herokuapp.com?font=Meslo+Nerd+Font&size=32&duration=2800&pause=2000&color=A855F7&center=true&vCenter=true&width=940&lines=Welcome+to+Action+Build!;Build+Kernels+For+All+OnePlus+Devices;Your+Device,+Your+Rules!;更高效+更全面+更快速+更稳定+全自动化">
+<img src="https://readme-typing-svg.demolab.com?font=Meslo+Nerd+Font&size=32&duration=2800&pause=2000&color=A855F7&center=true&vCenter=true&width=940&lines=Welcome+to+Action+Build!;Build+Kernels+For+All+OnePlus+Devices;Your+Device,+Your+Rules!;%E6%9B%B4%E9%AB%98%E6%95%88+%E6%9B%B4%E5%85%A8%E9%9D%A2+%E6%9B%B4%E5%BF%AB%E9%80%9F+%E6%9B%B4%E7%A8%B3%E5%AE%9A+%E5%85%A8%E8%87%AA%E5%8A%A8%E5%8C%96">
  
 禁止宣传**没有任何修改**的`fork`仓库，详见[LICENSE](LICENSE)
 <details>
@@ -40,9 +40,9 @@
 >
 >>`_？ Android19 (？)`
 >
->>`_？ Android18 (？)`
+>>`_？ Android18 (？)`<strong>
 >
->>`_c Android17 (Cinnamon Bun)`<strong>
+>>`_c Android17 (Cinnamon Bun)`
 >
 >>`_b Android16 (Baklava)`
 >
@@ -63,8 +63,8 @@
 >|| 平均耗时范围|最大耗时|
 >|------------------|----------------------|------------|
 >| `极速构建所有机型` | `1st:17min ~ 36min 2nd:6min ~ 17min` | `40/29min`|
->| `内核版本5.10-5.15使用官方脚本构建` | `29min ~ 35min`| `45min`    |
->| `内核版本6.1-6.12使用官方脚本构建` | `59min ~ 1h12min`| `1h28min` |
+>| `内核版本5.10-5.15使用官方脚本构建` | `20min ~ 35min`| `45min`    |
+>| `内核版本6.1-6.12使用官方脚本构建` | `55min ~ 1h12min`| `1h28min` |
 >
 > >使用ccache第一次可能会减速、仅极速构建生效
 >
@@ -78,7 +78,7 @@
 >
 >如果你开启了``ZRAM``算法,请在刷入``Anykernel3``重启**前**安装``ZRAM``模块,部分参数请自行调整。另外``5.10``内核暂不支持开启``ZRAM``算法,因为没有找到``zram.ko``路径,但是生成的``Anykernel3``依旧可用  
 >
->``MTK``设备不支持开启网络功能拓展,不支持关闭极速构建  
+>``MTK``设备不支持关闭极速构建  
 >
 >``OnePlus Ace5``不支持开启风驰,较老的机型即使内核加入也无法使用,不要勉强  
 >
@@ -95,7 +95,17 @@
 # 更新日志
 >小的更新内容将被忽略 更多内容请参看提交
  
-- 新增路径递推,完整适配内核版本`6.12+`的`Rust`构建逻辑和`bindgen`、`Kleaf`依赖，现在可以正常使用了  
+- 新增`FakeConfig(HideConfig)`，用于隐藏`proc/config.gz`内配置项可见性  
+```
+普通配置项:
+set_config "CONFIG_IP_NF_TARGET_ECN=y"
+隐藏配置项:
+set_hide_config "CONFIG_IP6_NF_NAT=y"
+```  
+ 
+- 新增`FakePatch`完善多内核等级与`susfs`的兼容问题  
+ 
+- 新增路径递推,完整适配内核版本`6.12+`的`Rust`构建逻辑和`bindgen`、`Kleaf`依赖搜索  
  
 - `lz4`自动跟随上游升级以及自动纠错  
  
@@ -125,14 +135,15 @@
  
 - 支持设置分支、自定义版本标识、修改对应分支的提交哈希来进行回退  
 ```
-设置分支:原builtin改成其他分支,请按照SukiSU Ultra仓库频道名进行修改,非开发者禁止修改,不可留空、删除
+设置分支:分为管理器层和内置层,请按照SukiSU Ultra仓库频道名进行修改,非开发者禁止修改,不可留空、删除
 自定义版本标识:
 将原先的提交hash改成自定义内容,再将提交hash放在最后 这个可以随意改,不要太长
+这里指的提交hash是内置层
 v3.1.7-f5541e21@builtin
 ↓
 v3.1.7-自定义内容@builtin[f5541e21]
-当你不想起用自定义版本标识时,就留空(builtin/)
-无论是否启用自定义版本标识和回退哈希,必须用两个/(U+002F)隔开,不可删除
+当你不想启用自定义版本标识时,就留空(builtin/)
+无论是否启用自定义版本标识和回退哈希,必须用三个/(U+002F)隔开,不可删除
 ```  
  
 - 全自动化获取内核信息及构建信息  
@@ -155,8 +166,6 @@ https://github.com/你的用户名(username)/你的仓库名/actions/caches
 ```  
  
 - 首发适配内核版本`6.6+`的`setlocalversion`文件中`echo`新格式,修复自定义&随机伪官方后缀失效。现在,全机型、全编译方式完美支持此功能  
- 
-- 添加`TRUSTY_EXISTS`用于自动检测`6.6`内核是否内核源码存在缺陷,判断是否`sed`处理  
  
 - 修复`ZRAM`无法使用或者打不开非系统应用的问题  
  
